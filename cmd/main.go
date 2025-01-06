@@ -16,9 +16,13 @@ func main() {
 
 	commander := commands.NewCommander(tm)
 
+	// If no command is provided, show help
 	if len(os.Args) < 2 {
-		fmt.Println("Expected usage: task-cli [add|list|delete|update|get]")
-		os.Exit(1)
+		if err := commander.Help([]string{}); err != nil {
+			fmt.Fprintf(os.Stderr, "Error showing help: %v\n", err)
+			os.Exit(1)
+		}
+		os.Exit(0)
 	}
 
 	command := os.Args[1]

@@ -380,6 +380,8 @@ func (c *Commander) Execute(command string, args []string) error {
 		return c.Update(args)
 	case "get":
 		return c.Get(args)
+	case "help":
+		return c.Help(args)
 	default:
 		return fmt.Errorf("unknown command: %s", command)
 	}
@@ -508,4 +510,87 @@ func getStatusIcon(t task.Task) string {
 	default:
 		return "[ ]"
 	}
+}
+func (c *Commander) Help(args []string) error {
+	cmd := flag.NewFlagSet("help", flag.ExitOnError)
+	if err := cmd.Parse(args); err != nil {
+		return err
+	}
+
+	// Si se proporciona un comando específico, mostrar ayuda detallada para ese comando
+	if len(cmd.Args()) > 0 {
+		return c.showCommandHelp(cmd.Args()[0])
+	}
+
+	// Mostrar ayuda general
+	fmt.Println("Task CLI - A simple task manager")
+	fmt.Println("\nUsage:")
+	fmt.Println("  task <command> [flags]")
+	fmt.Println("\nCommands:")
+	fmt.Println("  add         Create a new task")
+	fmt.Println("  list        List and filter tasks")
+	fmt.Println("  update      Update an existing task")
+	fmt.Println("  delete      Remove a task")
+	fmt.Println("  get         Show detailed task information")
+	fmt.Println("  help        Show help about any command")
+	fmt.Println("\nRun 'task help <command>' for detailed usage of each command")
+	return nil
+}
+
+func (c *Commander) showCommandHelp(command string) error {
+	switch command {
+	case "add":
+		fmt.Println("Create a new task")
+		fmt.Println("\nUsage:")
+		fmt.Println("  task add [flags]")
+		fmt.Println("\nFlags:")
+		fmt.Println("  -title string      Task title (required)")
+		fmt.Println("  -priority string   Task priority: low, medium, high (default: medium)")
+		fmt.Println("  -due string        Due date (format: YYYY-MM-DD HH:MM)")
+		fmt.Println("  -reminder string   Reminder time (format: YYYY-MM-DD HH:MM)")
+
+	case "list":
+		fmt.Println("List and filter tasks")
+		fmt.Println("\nUsage:")
+		fmt.Println("  task list [flags]")
+		fmt.Println("\nFlags:")
+		fmt.Println("  -priority          Sort by priority")
+		fmt.Println("  -by-due           Sort by due date")
+		fmt.Println("  -due string       Filter by time: today, tomorrow, thisweek, nextweek")
+		fmt.Println("                    overdue, duesoon, upcoming")
+		fmt.Println("  -all              Show completed tasks")
+		fmt.Println("  -format string    Output format: table, list (default: table)")
+
+	case "update":
+		fmt.Println("Update an existing task")
+		fmt.Println("\nUsage:")
+		fmt.Println("  task update <id> [flags]")
+		fmt.Println("\nFlags:")
+		fmt.Println("  -title string      New task title")
+		fmt.Println("  -priority string   Change priority: low, medium, high")
+		fmt.Println("  -done              Mark as completed")
+		fmt.Println("  -due string        Set due date (YYYY-MM-DD HH:MM)")
+		fmt.Println("  -reminder string   Set reminder (YYYY-MM-DD HH:MM)")
+		fmt.Println("  -remove-due        Remove due date")
+		fmt.Println("  -remove-reminder   Remove reminder")
+
+	case "delete":
+		fmt.Println("Remove a task")
+		fmt.Println("\nUsage:")
+		fmt.Println("  task delete <id>")
+
+	case "get":
+		fmt.Println("Show detailed task information")
+		fmt.Println("\nUsage:")
+		fmt.Println("  task get <id>")
+
+	case "help":
+		fmt.Println("Show help about any command")
+		fmt.Println("\nUsage:")
+		fmt.Println("  task help [command]")
+
+	default:
+		return fmt.Errorf("unknown command: %s", command)
+	}
+	return nil
 }
