@@ -6,9 +6,10 @@ A powerful and intuitive command-line task manager built with Go, designed to he
 
 ### Task Management
 
-- Create new tasks with titles
-- View tasks in a beautiful tabular format
-- Update task titles and completion status
+- Create new tasks with titles and priority levels
+- View tasks in a beautiful tabular format with color-coded priorities
+- Sort tasks by ID or priority
+- Update task titles, completion status, and priority levels
 - Delete tasks when no longer needed
 - Mark tasks as completed
 - Get detailed information about specific tasks
@@ -49,18 +50,20 @@ go build -o task
 
 ```bash
 # Add a new task
-task add -title "Complete project documentation"
+task add -title "Complete project documentation" -priority high
 
 # List all tasks
-task list
+task list                # Sort by ID (default)
+task list -priority     # Sort by priority
 
 # Get detailed information about a specific task
 task get <id>
 
 # Update a task
-task update <id> -title "New title"     # Update title
-task update <id> -done                  # Mark as completed
-task update <id> -title "New title" -done   # Update both
+task update <id> -title "New title"                    # Update title
+task update <id> -done                                # Mark as completed
+task update <id> -priority high                       # Change priority
+task update <id> -title "New title" -done -priority low  # Update multiple fields
 
 # Delete a task
 task delete <id>
@@ -68,20 +71,23 @@ task delete <id>
 
 ### Command Details
 
-| Command  | Description                                         | Example                            |
-| -------- | --------------------------------------------------- | ---------------------------------- |
-| `add`    | Creates a new task                                  | `task add -title "Buy groceries"`  |
-| `list`   | Shows all tasks in a table format                   | `task list`                        |
-| `get`    | Displays detailed information about a specific task | `task get 1`                       |
-| `update` | Modifies an existing task                           | `task update 1 -title "New title"` |
-| `delete` | Removes a task                                      | `task delete 1`                    |
+| Command  | Flags                                                                                    | Description                                                                     | Example                                           |
+| -------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `add`    | `-title` (required)<br>`-priority` (optional, default: medium)                           | Creates a new task                                                              | `task add -title "Buy groceries" -priority high`  |
+| `list`   | `-priority` (optional)                                                                   | Shows all tasks in a table format.<br>Use `-priority` to sort by priority level | `task list`<br>`task list -priority`              |
+| `get`    | `<id>` (required)                                                                        | Displays detailed information about a specific task                             | `task get 1`                                      |
+| `update` | `<id>` (required)<br>`-title` (optional)<br>`-done` (optional)<br>`-priority` (optional) | Modifies an existing task.<br>Multiple flags can be combined                    | `task update 1 -title "New title" -priority high` |
+| `delete` | `<id>` (required)                                                                        | Removes a task                                                                  | `task delete 1`                                   |
+
+### Priority Levels
+
+Tasks can be assigned one of three priority levels:
+
+- `high`: For urgent and important tasks
+- `medium`: Default priority level
+- `low`: For less urgent tasks
 
 ## Roadmap
-
-### Task Priorities
-
-- High, medium, and low priority levels
-- Priority-based sorting
 
 ### Time Management
 

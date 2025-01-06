@@ -2,15 +2,17 @@ package task
 
 import (
 	"fmt"
+	"sort"
 	"time"
 )
 
 type Task struct {
-	ID          int       `json:"id"`
-	Title       string    `json:"title"`
-	Done        bool      `json:"done"`
-	CreatedAt   time.Time `json:"created_at"`
-	CompletedAt time.Time `json:"completed_at"`
+	ID          int          `json:"id"`
+	Title       string       `json:"title"`
+	Done        bool         `json:"done"`
+	Priority    TaskPriority `json:"priority"`
+	CreatedAt   time.Time    `json:"created_at"`
+	CompletedAt time.Time    `json:"completed_at"`
 }
 
 type TaskManager struct {
@@ -43,11 +45,17 @@ func (tm *TaskManager) GetTaskByID(id int) (Task, error) {
 }
 
 // AddTask adds a new task to the TaskManager
-func (tm *TaskManager) AddTask(title string) Task {
+func (tm *TaskManager) AddTask(title string, priority TaskPriority) Task {
+	// If priority is not set, use the default priority (Medium)
+	if priority == 0 {
+		priority = DefaultPriority
+	}
+
 	task := Task{
 		ID:        tm.nextID,
 		Title:     title,
 		Done:      false,
+		Priority:  priority,
 		CreatedAt: time.Now(),
 	}
 
@@ -57,15 +65,20 @@ func (tm *TaskManager) AddTask(title string) Task {
 }
 
 // UpdateTask updates a task in the TaskManager
-func (tm *TaskManager) UpdateTask(id int, title string, done bool) error {
+func (tm *TaskManager) UpdateTask(id int, title string, done bool, priority *TaskPriority) error {
 	for i, task := range tm.tasks {
 		if task.ID == id {
-			// Actualizar el título
+			// Update title
 			if title != "" {
 				tm.tasks[i].Title = title
 			}
 
-			// Actualizar el estado
+			//  Update priority
+			if priority != nil {
+				tm.tasks[i].Priority = *priority
+			}
+
+			// Update state
 			tm.tasks[i].Done = done
 			if done {
 				tm.tasks[i].CompletedAt = time.Now()
@@ -82,10 +95,33 @@ func (tm *TaskManager) UpdateTask(id int, title string, done bool) error {
 func (tm *TaskManager) DeleteTask(id int) error {
 	for i, task := range tm.tasks {
 		if task.ID == id {
-			// Eliminar la tarea usando slice tricks
+			// Delete task from slice using append
 			tm.tasks = append(tm.tasks[:i], tm.tasks[i+1:]...)
 			return nil
 		}
 	}
 	return fmt.Errorf("task with id  %d not found", id)
+}
+
+// GetTasksSortedByPriority returns all tasks sorted by priority (high to low)
+func (tm *TaskManager) GetTasksSorted(byPriority bool) []Task {
+	sorted := make([]Task, len(tm.tasks))
+	copy(sorted, tm.tasks)
+
+	if byPriority {
+		// Order by priority and then by ID
+		sort.Slice(sorted, func(i, j int) bool {
+			if sorted[i].Priority != sorted[j].Priority {
+				return sorted[i].Priority > sorted[j].Priority
+			}
+			return sorted[i].ID < sorted[j].ID
+		})
+	} else {
+		// Order only by ID
+		sort.Slice(sorted, func(i, j int) bool {
+			return sorted[i].ID < sorted[j].ID
+		})
+	}
+
+	return sorted
 }
