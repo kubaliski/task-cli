@@ -9,6 +9,7 @@ import (
 const fileName = "tasks.json"
 
 func (tm *TaskManager) SaveTasks() error {
+
 	data, err := json.MarshalIndent(tm.tasks, "", "  ")
 	if err != nil {
 		return err
@@ -24,7 +25,13 @@ func (tm *TaskManager) SaveTasks() error {
 		return err
 	}
 
-	return os.WriteFile(filepath.Join(dataDir, fileName), data, 0644)
+	filePath := filepath.Join(dataDir, fileName)
+	err = os.WriteFile(filePath, data, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (tm *TaskManager) LoadTasks() error {
@@ -33,10 +40,10 @@ func (tm *TaskManager) LoadTasks() error {
 		return err
 	}
 
-	filepath := filepath.Join(homeDir, ".task-cli", fileName)
-	data, err := os.ReadFile(filepath)
+	filePath := filepath.Join(homeDir, ".task-cli", fileName)
+	data, err := os.ReadFile(filePath)
 	if os.IsNotExist(err) {
-		return nil // No file, no tasks we start with an empty list
+		return nil
 	}
 
 	if err != nil {
