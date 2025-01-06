@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"strconv"
+	"strings"
 	"task-cli/internal/task"
 )
 
@@ -43,13 +44,47 @@ func (c *Commander) List(_ []string) error {
 		return nil
 	}
 
+	// Define column widths
+	idWidth := 4
+	statusWidth := 8
+	titleWidth := 30
+	createdWidth := 20
+	completedWidth := 20
+
+	// Print table header
+	fmt.Println(strings.Repeat("-", idWidth+statusWidth+titleWidth+createdWidth+completedWidth+5))
+	fmt.Printf("| %-*s | %-*s | %-*s | %-*s | %-*s |\n",
+		idWidth-2, "ID",
+		statusWidth-2, "Status",
+		titleWidth-2, "Title",
+		createdWidth-2, "Created At",
+		completedWidth-2, "Completed At")
+	fmt.Println(strings.Repeat("-", idWidth+statusWidth+titleWidth+createdWidth+completedWidth+5))
+
+	// Print tasks
 	for _, t := range tasks {
-		status := " "
+		status := "Pending"
+		completedAt := "---"
 		if t.Done {
-			status = "✓"
+			status = "✓ Done"
+			completedAt = t.CompletedAt.Format("2006-01-02 15:04")
 		}
-		fmt.Printf("[%s] %d: %s\n", status, t.ID, t.Title)
+
+		// Truncate title if it's too long
+		title := t.Title
+		if len(title) > titleWidth-2 {
+			title = title[:titleWidth-5] + "..."
+		}
+
+		fmt.Printf("| %-*d | %-*s | %-*s | %-*s | %-*s |\n",
+			idWidth-2, t.ID,
+			statusWidth-2, status,
+			titleWidth-2, title,
+			createdWidth-2, t.CreatedAt.Format("2006-01-02 15:04"),
+			completedWidth-2, completedAt)
 	}
+
+	fmt.Println(strings.Repeat("-", idWidth+statusWidth+titleWidth+createdWidth+completedWidth+5))
 	return nil
 }
 
