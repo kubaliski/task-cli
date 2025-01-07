@@ -15,6 +15,7 @@ A powerful and intuitive command-line task manager built with Go, designed to he
 - Delete tasks when no longer needed
 - Mark tasks as completed
 - Get detailed information about specific tasks
+- Built-in help system with command-specific documentation
 
 ### Time Management
 
@@ -60,9 +61,20 @@ go build -o task
 
 ## Usage
 
+You can see all available commands and their usage by running:
+
+```bash
+task help           # Show overview of all commands
+task help <command> # Show detailed help for a specific command
+```
+
 ### Basic Commands
 
 ```bash
+# Get help
+task help                  # Show available commands
+task help add             # Show help for add command
+
 # Add a new task
 task add -title "Complete project documentation" -priority high
 task add -title "Team meeting" -priority high -due "2024-01-10 15:00" -reminder "2024-01-10 14:00"
@@ -103,6 +115,7 @@ task delete <id>
 
 | Command  | Flags                                                                                                                                          | Description                                                                 | Example                                                            |
 | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `help`   | `[command]` (optional)                                                                                                                         | Shows help information for all or specific command                          | `task help add`                                                    |
 | `add`    | `-title` (required)<br>`-priority` (optional, default: medium)<br>`-due` (optional)<br>`-reminder` (optional)                                  | Creates a new task                                                          | `task add -title "Meeting" -priority high -due "2024-01-10 15:00"` |
 | `list`   | `-priority` (sort by priority)<br>`-by-due` (sort by due date)<br>`-due` (filter by time)<br>`-all` (show completed)<br>`-format` (table/list) | Shows tasks in table/list format with various sorting and filtering options | `task list -due today -priority`                                   |
 | `get`    | `<id>` (required)                                                                                                                              | Displays detailed information about a specific task                         | `task get 1`                                                       |
