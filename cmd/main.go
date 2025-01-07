@@ -1,3 +1,4 @@
+// main.go
 package main
 
 import (
@@ -16,9 +17,9 @@ func main() {
 
 	commander := commands.NewCommander(tm)
 
-	// If no command is provided, show help
+	// Check if there are any arguments, if not, show help
 	if len(os.Args) < 2 {
-		if err := commander.Help([]string{}); err != nil {
+		if err := commander.Execute("help", []string{}); err != nil {
 			fmt.Fprintf(os.Stderr, "Error showing help: %v\n", err)
 			os.Exit(1)
 		}
