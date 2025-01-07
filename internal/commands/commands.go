@@ -10,10 +10,10 @@ import (
 )
 
 type Commander struct {
-	tm *task.TaskManager
+	tm task.ITaskManager
 }
 
-func NewCommander(tm *task.TaskManager) *Commander {
+func NewCommander(tm task.ITaskManager) *Commander {
 	return &Commander{tm: tm}
 }
 
